@@ -24,6 +24,7 @@ flake_warnings = ('F401',  # module imported but unused
                            #   star imports: module
                   'F602',  # dictionary key variable name repeated with
                            #   different values
+                  'F841',  # local variable name is assigned to but never used
                   )
 
 # default code style messages to warnings except these
@@ -36,12 +37,12 @@ style_errors = ('E112',  # expected an indented block
                 'E902',  # IOError
                 )
 
+severity_enum = lsp.DiagnosticSeverity
+warning = severity_enum.Warning
+error = severity_enum.Error
+
 
 def results_to_diagnostic(results: str):
-    severity_enum = lsp.DiagnosticSeverity
-    warning = severity_enum.Warning
-    error = severity_enum.Error
-
     diaglist = list()
     for line in results.splitlines():
         if line:
@@ -69,6 +70,17 @@ def results_to_diagnostic(results: str):
     return diaglist
 
 
+def return_error(stderr: str):
+    return [{'source': 'flake8',
+             'range': {'start': {'line': 0, 'character': 0},
+                       'end': {'line': 0, 'character': 1}
+                       },
+             'code': 'ERR',
+             'message': stderr,
+             'severity': error,
+             }]
+
+
 def compile_flake8_args(config):
     args = ['flake8']
     for key, val in config.plugin_settings('flake8').items():
@@ -83,15 +95,17 @@ def compile_flake8_args(config):
 
 def run_flake8(args, document):
     from subprocess import run, PIPE
-    return run(args, stdout=PIPE, stderr=PIPE, input=document.source,
-               text=True)
+    return run(args, stdout=PIPE, stderr=PIPE, input=document.source.encode())
 
 
 @hookimpl(tryfirst=True)
 def pyls_lint(config, document):
     args = compile_flake8_args(config)
     p = run_flake8(args, document)
-    return results_to_diagnostic(p.stdout)
+    stderr = p.stderr.decode()
+    if stderr:
+        return return_error(stderr)
+    return results_to_diagnostic(p.stdout.decode())
 
 
 if __name__ == "__main__":
@@ -109,8 +123,11 @@ if __name__ == "__main__":
     args = compile_flake8_args(testcfg)
     print(args)
     p = run_flake8(args, testdoc)
-    print('stderr: ' + p.stderr)
-    res = p.stdout
+    err = p.stderr.decode()
+    if err:
+        print('stderr: ' + repr(return_error(err)))
+    res = p.stdout.decode()
     print(res)
     diag = results_to_diagnostic(res)
     print(diag)
+
