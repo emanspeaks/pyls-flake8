@@ -35,6 +35,7 @@ style_errors = ('E112',  # expected an indented block
                 'E743',  # do not define functions named ‘l’, ‘O’, or ‘I’
                 'E901',  # SyntaxError or IndentationError
                 'E902',  # IOError
+                'E999',  # invalid syntax
                 )
 
 severity_enum = lsp.DiagnosticSeverity
