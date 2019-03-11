@@ -43,7 +43,7 @@ warning = severity_enum.Warning
 error = severity_enum.Error
 
 
-def results_to_diagnostic(results: str):
+def results_to_diagnostic(results: str, document):
     diaglist = list()
     for line in results.splitlines():
         if line:
@@ -58,10 +58,15 @@ def results_to_diagnostic(results: str):
             else:
                 severity = warning
 
+            start_mark = {'line': lineno, 'character': offset}
+            end_mark = {'line': lineno, 'character': offset+1}
+            if document:
+                word = document.word_at_position(start_mark)
+                if word:
+                    end_mark['character'] = start_mark['character'] + len(word)
+
             diag = {'source': 'flake8',
-                    'range': {'start': {'line': lineno, 'character': offset},
-                              'end': {'line': lineno, 'character': offset + 1}
-                              },
+                    'range': {'start': start_mark, 'end': end_mark},
                     'code': code,
                     'message': msg,
                     'severity': severity,
@@ -106,7 +111,7 @@ def pyls_lint(config, document):
     stderr = p.stderr.decode()
     if stderr:
         return return_error(stderr)
-    return results_to_diagnostic(p.stdout.decode())
+    return results_to_diagnostic(p.stdout.decode(), document)
 
 
 if __name__ == "__main__":
@@ -131,4 +136,3 @@ if __name__ == "__main__":
     print(res)
     diag = results_to_diagnostic(res)
     print(diag)
-
