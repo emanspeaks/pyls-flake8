@@ -4,7 +4,7 @@ desc = "Flake8 plugin for the Python Language Server"
 
 setup(
       name="pyls-flake8",
-      version="0.1.0",
+      version="0.2.0",
       description=desc,
       long_description=desc,
       url="https://github.com/emanspeaks/pyls-flake8",
