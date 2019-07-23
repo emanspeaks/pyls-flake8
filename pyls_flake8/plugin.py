@@ -114,6 +114,19 @@ def pyls_lint(config, document):
     return results_to_diagnostic(p.stdout.decode(), document)
 
 
+@hookimpl
+def pyls_settings():
+    """
+    Disable all plugins which are supported by flake8
+    """
+    config = {'plugins': {
+        'pycodestyle': {'enabled': False},
+        'mccabe': {'enabled': False},
+        'pyflakes': {'enabled': False}
+    }}
+    return config
+
+
 if __name__ == "__main__":
     class test_document:
         def __init__(self, src: str):
