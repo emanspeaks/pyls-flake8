@@ -90,11 +90,14 @@ def return_error(stderr: str):
 def compile_flake8_args(config):
     args = ['flake8']
     for key, val in config.plugin_settings('flake8').items():
-        if key != 'enabled':
-            arg = '--' + key
-            if val and val is not True:
-                arg += '=' + str(val)
-            args.append(arg)
+        if key == 'enabled':
+            continue
+        elif key == "maxLineLength":
+            key = "max-line-length"
+        arg = '--' + key
+        if val and val is not True:
+            arg += '=' + str(val)
+        args.append(arg)
     args.append('-')
     return args
 
