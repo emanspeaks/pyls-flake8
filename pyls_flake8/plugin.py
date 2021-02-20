@@ -88,17 +88,22 @@ def return_error(stderr: str):
 
 
 def compile_flake8_args(config):
-    args = ['flake8']
-    for key, val in config.plugin_settings('flake8').items():
-        if key == 'enabled':
+    args = ["flake8"]
+    for key, val in config.plugin_settings("flake8").items():
+        if key == "enabled":
             continue
         elif key == "maxLineLength":
             key = "max-line-length"
-        arg = '--' + key
+        arg = "--" + key
+
         if val and val is not True:
-            arg += '=' + str(val)
+            if isinstance(val, list):
+                val = ",".join(val)
+                arg += f"={val}"
+            else:
+                arg += f"={val}"
         args.append(arg)
-    args.append('-')
+    args.append("-")
     return args
 
 
