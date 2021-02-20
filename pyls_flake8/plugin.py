@@ -1,5 +1,6 @@
-from pyls import hookimpl, lsp
 import re
+
+from pyls import hookimpl, lsp
 
 # default ignored by Flake8 package:
 # E121, continuation line under-indented for hanging indent
@@ -10,33 +11,34 @@ import re
 # E242, tab after ‘,’
 # E704, multiple statements on one line (def)
 
-
-result_re = re.compile(r'stdin:(\d*):(\d*): (\w*) (.*)')
+result_re = re.compile(r"stdin:(\d*):(\d*): (\w*) (.*)")
 
 # default flake messages to error except these
-flake_warnings = ('F401',  # module imported but unused
-                  'F402',  # import module from line N shadowed by
-                           #   loop variable
-                  'F403',  # ‘from module import *’ used;
-                           #   unable to detect undefined names
-                  'F404',  # future import(s) name after other statements
-                  'F405',  # name may be undefined, or defined from
-                           #   star imports: module
-                  'F602',  # dictionary key variable name repeated with
-                           #   different values
-                  'F841',  # local variable name is assigned to but never used
-                  )
+flake_warnings = (
+    "F401",  # module imported but unused
+    "F402",  # import module from line N shadowed by
+    #   loop variable
+    "F403",  # ‘from module import *’ used;
+    #   unable to detect undefined names
+    "F404",  # future import(s) name after other statements
+    "F405",  # name may be undefined, or defined from
+    #   star imports: module
+    "F602",  # dictionary key variable name repeated with
+    #   different values
+    "F841",  # local variable name is assigned to but never used
+)
 
 # default code style messages to warnings except these
-style_errors = ('E112',  # expected an indented block
-                'E113',  # unexpected indentation
-                'E741',  # do not use variables named ‘l’, ‘O’, or ‘I’
-                'E742',  # do not define classes named ‘l’, ‘O’, or ‘I’
-                'E743',  # do not define functions named ‘l’, ‘O’, or ‘I’
-                'E901',  # SyntaxError or IndentationError
-                'E902',  # IOError
-                'E999',  # invalid syntax
-                )
+style_errors = (
+    "E112",  # expected an indented block
+    "E113",  # unexpected indentation
+    "E741",  # do not use variables named ‘l’, ‘O’, or ‘I’
+    "E742",  # do not define classes named ‘l’, ‘O’, or ‘I’
+    "E743",  # do not define functions named ‘l’, ‘O’, or ‘I’
+    "E901",  # SyntaxError or IndentationError
+    "E902",  # IOError
+    "E999",  # invalid syntax
+)
 
 severity_enum = lsp.DiagnosticSeverity
 warning = severity_enum.Warning
@@ -52,39 +54,45 @@ def results_to_diagnostic(results: str, document):
             lineno = int(linestr) - 1
             offset = int(col) - 1
 
-            if ((code[0] == 'F' and code not in flake_warnings)
-                    or code in style_errors):
+            if (
+                code[0] == "F" and code not in flake_warnings
+            ) or code in style_errors:
                 severity = error
             else:
                 severity = warning
 
-            start_mark = {'line': lineno, 'character': offset}
-            end_mark = {'line': lineno, 'character': offset+1}
+            start_mark = {"line": lineno, "character": offset}
+            end_mark = {"line": lineno, "character": offset + 1}
             if document:
                 word = document.word_at_position(start_mark)
                 if word:
-                    end_mark['character'] = start_mark['character'] + len(word)
+                    end_mark["character"] = start_mark["character"] + len(word)
 
-            diag = {'source': 'flake8',
-                    'range': {'start': start_mark, 'end': end_mark},
-                    'code': code,
-                    'message': msg,
-                    'severity': severity,
-                    }
+            diag = {
+                "source": "flake8",
+                "range": {"start": start_mark, "end": end_mark},
+                "code": code,
+                "message": msg,
+                "severity": severity,
+            }
             diaglist.append(diag)
 
     return diaglist
 
 
 def return_error(stderr: str):
-    return [{'source': 'flake8',
-             'range': {'start': {'line': 0, 'character': 0},
-                       'end': {'line': 0, 'character': 1}
-                       },
-             'code': 'ERR',
-             'message': stderr,
-             'severity': error,
-             }]
+    return [
+        {
+            "source": "flake8",
+            "range": {
+                "start": {"line": 0, "character": 0},
+                "end": {"line": 0, "character": 1},
+            },
+            "code": "ERR",
+            "message": stderr,
+            "severity": error,
+        }
+    ]
 
 
 def compile_flake8_args(config):
@@ -108,7 +116,8 @@ def compile_flake8_args(config):
 
 
 def run_flake8(args, document):
-    from subprocess import run, PIPE
+    from subprocess import PIPE, run
+
     return run(args, stdout=PIPE, stderr=PIPE, input=document.source.encode())
 
 
@@ -127,15 +136,18 @@ def pyls_settings():
     """
     Disable all plugins which are supported by flake8
     """
-    config = {'plugins': {
-        'pycodestyle': {'enabled': False},
-        'mccabe': {'enabled': False},
-        'pyflakes': {'enabled': False}
-    }}
+    config = {
+        "plugins": {
+            "pycodestyle": {"enabled": False},
+            "mccabe": {"enabled": False},
+            "pyflakes": {"enabled": False},
+        }
+    }
     return config
 
 
 if __name__ == "__main__":
+
     class test_document:
         def __init__(self, src: str):
             self.source = src
@@ -152,7 +164,7 @@ if __name__ == "__main__":
     p = run_flake8(args, testdoc)
     err = p.stderr.decode()
     if err:
-        print('stderr: ' + repr(return_error(err)))
+        print("stderr: " + repr(return_error(err)))
     res = p.stdout.decode()
     print(res)
     diag = results_to_diagnostic(res)
