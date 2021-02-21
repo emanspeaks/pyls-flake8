@@ -1,10 +1,13 @@
-**Help wanted: I no longer actively use or maintain this project.  If you would like to take control, please contact me or create an issue.  Thanks!**
-
 # pyls-flake8
 
-In the same environment as `python-language-server`, navigate to the 
-downloaded/cloned location of `pyls-flake8` and type:
+A Flake8 plugin for the
+[Python Language Server](https://github.com/palantir/python-language-server).
+
+Install this plugin in the same environment as `python-language-server`:
 
 ```shell
-pip install .
+pip install pyls-flake8
 ```
+
+pyls-flake8 will read its config from your project's ``setup.cfg``,
+``tox.ini`` or ``.flake8`` file if it has one.
