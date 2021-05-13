@@ -1,9 +1,9 @@
 # pyls-flake8
 
 A Flake8 plugin for the
-[Python Language Server](https://github.com/palantir/python-language-server).
+[Python LSP Server](https://github.com/python-lsp/python-lsp-server).
 
-Install this plugin in the same environment as `python-language-server`:
+Install this plugin in the same environment as `python-lsp-server`:
 
 ```shell
 pip install pyls-flake8
