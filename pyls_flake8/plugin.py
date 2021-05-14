@@ -1,6 +1,6 @@
 import re
 
-from pyls import hookimpl, lsp
+from pylsp import hookimpl, lsp
 
 # default ignored by Flake8 package:
 # E121, continuation line under-indented for hanging indent
@@ -122,7 +122,7 @@ def run_flake8(args, document):
 
 
 @hookimpl(tryfirst=True)
-def pyls_lint(config, document):
+def pylsp_lint(config, document):
     args = compile_flake8_args(config)
     p = run_flake8(args, document)
     stderr = p.stderr.decode()
@@ -132,7 +132,7 @@ def pyls_lint(config, document):
 
 
 @hookimpl
-def pyls_settings():
+def pylsp_settings():
     """
     Disable all plugins which are supported by flake8
     """

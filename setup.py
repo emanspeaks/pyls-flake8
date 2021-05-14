@@ -21,8 +21,8 @@ setup(
     author="Randy Eckman",
     author_email="emanspeaks@gmail.com",
     packages=find_packages(),
-    install_requires=["python-language-server", "flake8>=3.6.0"],
-    entry_points={"pyls": ["pyls_flake8 = pyls_flake8.plugin"]},
+    install_requires=["python-lsp-server", "flake8>=3.6.0"],
+    entry_points={"pylsp": ["pyls_flake8 = pyls_flake8.plugin"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
