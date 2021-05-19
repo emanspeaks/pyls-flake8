@@ -10,7 +10,7 @@ def read(*parts):
 
 setup(
     name="pyls-flake8",
-    version="0.3.0",
+    version="0.4.0",
     description="A Flake8 plugin for the Python Language Server",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
