@@ -118,12 +118,18 @@ def compile_flake8_args(config):
         key = to_snake_case(key)
         arg = "--" + key
 
-        if val and val is not True:
-            if isinstance(val, list):
-                val = ",".join(val)
-                arg += f"={val}"
-            else:
-                arg += f"={val}"
+        if val is None:
+            continue
+
+        if isinstance(val, list):
+            val = ",".join(val)
+            arg += f"={val}"
+        elif isinstance(val, bool):
+            if not val:
+                continue
+        else:
+            arg += f"={val}"
+
         args.append(arg)
     args.append("-")
     return args
