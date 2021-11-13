@@ -95,13 +95,27 @@ def return_error(stderr: str):
     ]
 
 
+camelcase_snakecase_mapping = {
+    "maxLineLength": "max-line-length",
+    "hangClosing": "hang-closing",
+    "perFileIgnores": "per-file-ignores",
+}
+
+
+def to_snake_case(option):
+    if option in camelcase_snakecase_mapping:
+        return camelcase_snakecase_mapping[option]
+
+    return option
+
+
 def compile_flake8_args(config):
     args = ["flake8"]
     for key, val in config.plugin_settings("flake8").items():
         if key == "enabled":
             continue
-        elif key == "maxLineLength":
-            key = "max-line-length"
+
+        key = to_snake_case(key)
         arg = "--" + key
 
         if val and val is not True:
