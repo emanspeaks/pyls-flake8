@@ -110,7 +110,15 @@ def to_snake_case(option):
 
 
 def compile_flake8_args(config):
-    args = ["flake8"]
+    import sys
+    import shutil
+    
+    if shutil.which("flake8"):
+        args = ["flake8"]
+    else:
+        # flake8 does not exist on path, but must exist in the env pyls-flake8 is instaleld in
+        args = [path + "/flake8" for path in sys.path if shutil.which(path + "/flake8")][0:]
+        
     for key, val in config.plugin_settings("flake8").items():
         if key == "enabled":
             continue
