@@ -131,7 +131,7 @@ def compile_flake8_args(config):
             arg += f"={val}"
 
         args.append(arg)
-    args.append("-")
+    args += ["--format", "default", "-"]
     return args
 
 
