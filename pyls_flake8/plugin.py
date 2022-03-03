@@ -48,8 +48,9 @@ error = severity_enum.Error
 def results_to_diagnostic(results: str, document):
     diaglist = list()
     for line in results.splitlines():
-        if line:
-            linestr, col, code, msg = result_re.match(line).groups()
+        match = result_re.match(line)
+        if match:
+            linestr, col, code, msg = match.groups()
 
             lineno = int(linestr) - 1
             offset = int(col) - 1
@@ -131,7 +132,7 @@ def compile_flake8_args(config):
             arg += f"={val}"
 
         args.append(arg)
-    args.append("-")
+    args += ["--format", "default", "-"]
     return args
 
 
