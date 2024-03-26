@@ -99,6 +99,7 @@ camelcase_snakecase_mapping = {
     "maxLineLength": "max-line-length",
     "hangClosing": "hang-closing",
     "perFileIgnores": "per-file-ignores",
+    "extendIgnore": "extend-ignore",
 }
 
 
